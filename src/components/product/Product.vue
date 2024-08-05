@@ -1,5 +1,5 @@
 <script setup>
-import {reactive, inject, onMounted, ref, computed, provide, watch} from 'vue';
+import {reactive, onMounted, ref, computed } from 'vue';
 
 import SortProduct from '../sortProduct/SortProduct.vue'
 

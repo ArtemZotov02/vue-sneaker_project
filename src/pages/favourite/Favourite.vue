@@ -1,9 +1,9 @@
 <script setup>
-    import { state, addInFavorite, addInBasket, removeUserState } from '@/store';
+    import ButtonRed from '@/components/buttonRed/ButtonRed.vue';
+import { state, addInFavorite, addInBasket, removeUserState } from '@/store';
 
 
     const deleteAllFavourites = () => {
-        // localStorage.removeItem(`favourite_${localStorage.getItem('user')}`)
         removeUserState('favourite')
         state.favourite = []
     }
@@ -13,10 +13,9 @@
     <div class="flex flex-col justify-between">
         <div  v-if="state.favourite.length >= 1" class="flex justify-between my-[30px]">
             <p class="font-bold text-[24px]">Усього збережених товарів: {{ state.favourite.length }}</p>
-            <button class="px-[20px] py-[10px] bg-red-500 text-white rounded-xl"
-                            v-if="state.favourite.length > 1" 
-                            @click="deleteAllFavourites()"
-                    >Видалити все</button>
+            <ButtonRed v-if="state.favourite.length > 1"  @click="deleteAllFavourites()" class="px-[20px] py-[5px]">   
+                Видалити все
+            </ButtonRed>
         </div>
         <div class="grid grid-cols-4 gap-5 ">
                 <div v-for="(e) in state.favourite" :key="e.id" class="flex flex-col justify-between relative border mx-auto border-slate-300 rounded-2xl p-[20px] max-w-[288px]">

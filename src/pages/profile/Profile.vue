@@ -1,7 +1,8 @@
 <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import Cookies from 'js-cookie';
-import { getUserState, state } from '@/store';
+import { getUserState, removeUserState, setUserState, state } from '@/store';
+import ButtonRed from '@/components/buttonRed/ButtonRed.vue';
 
 
     const reg = ref(false)
@@ -33,7 +34,6 @@ import { getUserState, state } from '@/store';
         failPass.value = false 
     }
 
-
     const regUser = (e) => {
         if (login.value && password.value != '') {
             if(!Cookies.get(login.value)) {
@@ -63,26 +63,64 @@ import { getUserState, state } from '@/store';
                 auth.value = false
                 authorized.value = true
                 updateUserState()
+                state.profileAvatar = getUserState().profileAvatar
             } else {
                 failPass.value = true
             }
         } else {
             failLogin.value = true
+            if(!Cookies.get(login.value)) {
+                removeUserState('', true, login.value)
+                localStorage.removeItem('login')
+                localStorage.removeItem('user')
+            }
         }
     }
+
+
+
+
 
     const userOut = () => {
         authorized.value = false 
         auth.value = true
-        localStorage.removeItem('login')
+        localStorage.removeItem('login')    
         localStorage.removeItem('user')
         updateUserState()
-        // state.favourite = JSON.parse(localStorage.getItem(`favourite_${localStorage.getItem('user')}`) || '[]')
-        // state.productsBasket = JSON.parse(localStorage.getItem(`basket_${localStorage.getItem('user')}`) || '[]')
-        // state.totalBasket = JSON.parse(localStorage.getItem(`basket_${localStorage.getItem('user')}`) || '[]').reduce((total, item) => total + item.price, 0) 
     }
+
+    const deleteAcc = () => {
+        Cookies.remove(localStorage.getItem('user'))
+        localStorage.removeItem(`userData_${localStorage.getItem('user')}`)
+        state.profileAvatar = state.profileAvatar
+        userOut()
+    }
+
+    const fileInput = ref(null);
+
+    const triggerFileInput = () => {
+        fileInput.value.click();
+    };
+
+    const loadAvatar = (e) => {
+        const file = e.target.files[0];
+        if (file && file.type.startsWith('image/')) {
+            const reader = new FileReader()
+            reader.onload = () => {
+                state.profileAvatar = reader.result
+                setUserState('profileAvatar', reader.result)
+            }
+            reader.readAsDataURL(file)
+        } 
+    }
+
+    const deleteAvatar = () => {
+        removeUserState('profileAvatar')
+        state.profileAvatar = '../../../public/noUser.webp'
+    }
+  
     onMounted(()=> {
-        if(localStorage.getItem('login') === 'true') {
+        if(localStorage.getItem('login')) {
             auth.value = false
         }
 
@@ -93,7 +131,6 @@ import { getUserState, state } from '@/store';
 
 
 <template>
-    <div>
         <div v-if="reg" class="flex flex-col items-center w-[350px] mx-auto p-[20px] pt-[10px] my-[20px]">
             <p class="font-bold mb-[20px] text-blue-800 text-[24px]">Реєстрація</p>
             <input 
@@ -101,7 +138,7 @@ import { getUserState, state } from '@/store';
                 placeholder="Имя"
                 @input="(e)=> setLogin(e.target.value)"
             />
-            <p v-if="failLogin" class="text-red-600">Такий користувач вже зареєстровано</p>
+            <p v-if="failLogin" class="text-red-600">Такий користувач вже зареєстрований</p>
             <input 
                 class="rounded-lg w-[300px] px-[10px] py-[5px] mt-[20px] border-2" 
                 placeholder="Пароль"  
@@ -147,14 +184,47 @@ import { getUserState, state } from '@/store';
         </div>
 
         <div v-if="authorized">
-            <div class="my-[20px] flex justify-between">
-                <div>
-                    <p class="font-bold text-[20px]">Ім'я: {{ login }}</p>
+            <div class="mt-[30px]  flex justify-between items-center bg-gray-100 p-6 rounded-lg shadow-md">
+                <div class="flex flex-col h-[600px]  bg-white p-6 shadow-lg rounded-lg w-[500px]">
+                    <div class="flex items-center">
+                        <button class="relative">
+                            <img :src="state.profileAvatar" alt="Avatar" class="w-24 h-24 rounded-full object-cover"/>
+                            <input type="file" @change="loadAvatar" accept="image/*" ref="fileInput" class="hidden"/>
+                            <div @click="triggerFileInput" class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full text-white opacity-0 hover:opacity-100 transition duration-300">
+                                Додати фото
+                            </div>
+                        </button>
+                        <div class="ml-[30px]">
+                            <p class="font-bold text-xl text-gray-700 mb-[10px] ">Ім'я: {{ login }}</p>
+                            <ButtonRed v-if="state.profileAvatar !== '../public/noUser.webp'" @click="deleteAvatar" class="text-[10px] py-1 px-3">
+                                Видалити фото
+                            </ButtonRed>
+                        </div>
+                    </div>
+                    
                 </div>
-                <div>
-                    <button class="px-[20px] py-[10px] bg-red-500 text-white rounded-lg" @click="userOut">Вийти</button>
+                
+                <div class="flex flex-col items-center">
+                    <ButtonRed class="mb-[10px] px-3 py-1" @click="userOut">
+                        Вийти
+                    </ButtonRed>
+                    <ButtonRed @click="deleteAcc" class="px-3 py-1">
+                        Видалити аккаунт
+                    </ButtonRed>
                 </div>
+              
             </div>
         </div>
-    </div>
+
 </template>
+
+
+
+
+
+
+
+  
+ 
+
+

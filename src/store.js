@@ -1,9 +1,9 @@
-import { reactive, watch } from 'vue';
+import { reactive } from 'vue';
 //
 const getUserState = () => {
   const user = localStorage.getItem('user')
-  const {basket = [], favourite = []} = JSON.parse(localStorage.getItem(`userData_${user}`) || '{}')
-  return {basket, favourite}
+  const {basket = [], favourite = [], profileAvatar = '../public/noUser.webp'} = JSON.parse(localStorage.getItem(`userData_${user}`) || '{}')
+  return {basket, favourite, profileAvatar}
 }
 
 const setUserState = (key, data ) => {
@@ -14,8 +14,8 @@ const setUserState = (key, data ) => {
   localStorage.setItem(`userData_${user}`, JSON.stringify(obj))
 }
 
-const removeUserState = (key, bool=false ) => {
-  const user = localStorage.getItem('user')
+const removeUserState = (key, bool=false, userName = '') => {
+  const user =  userName || localStorage.getItem('user')
   const obj = JSON.parse(localStorage.getItem(`userData_${user}`) || '{}')
   
   if(!bool) {
@@ -30,7 +30,9 @@ const state = reactive({
   isFavorite: {},
   productsBasket: getUserState().basket,
   favourite: getUserState().favourite,
+  profileAvatar: getUserState().profileAvatar,
   totalBasket: 0,
+  order: []
 });
 //
 function addInFavorite(name, price, img, id) {    
@@ -43,11 +45,9 @@ function addInFavorite(name, price, img, id) {
       img: img,
       id: id
     })
-    // localStorage.setItem(`favourite_${localStorage.getItem('user')}`, JSON.stringify(state.favourite))
     setUserState('favourite', state.favourite)  
   } else {
     state.favourite.splice(index, 1)
-    // localStorage.setItem(`favourite_${localStorage.getItem('user')}`, JSON.stringify(state.favourite))
     setUserState('favourite', state.favourite)  
   }
 }
@@ -60,8 +60,8 @@ function addInBasket(e) {
       id: e.id
     });
     state.totalBasket += e.price;
-    // localStorage.setItem(`basket_${localStorage.getItem('user')}`, JSON.stringify(state.productsBasket))
     setUserState('basket', state.productsBasket)  
 }
+
 
 export { state, addInFavorite, addInBasket, getUserState, setUserState, removeUserState};

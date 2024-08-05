@@ -1,14 +1,25 @@
 <script setup>
  
-  import { onBeforeMount, onMounted, onUpdated, ref, watch} from 'vue';
+  import { onBeforeMount, onBeforeUpdate, onMounted, onUpdated} from 'vue';
   import Header from './components/header/Header.vue'
-  import { state } from './store';
+  import { getUserState, removeUserState, state } from './store';
+  import Cookies from 'js-cookie';
 
 
-  onMounted(()=> {
+  onBeforeMount(()=> {
     state.totalBasket = state.productsBasket.reduce((total, item) => total + item.price, 0)
-    // localStorage.clear()
-})
+  
+
+    if(!Cookies.get(localStorage.getItem('user')) && localStorage.getItem('user') != null) {
+      removeUserState('', true)
+      localStorage.removeItem('login')
+      localStorage.removeItem('user')
+
+      state.favourite = getUserState().favourite
+      state.productsBasket = getUserState().basket
+    }
+})  
+
 
 </script>
 

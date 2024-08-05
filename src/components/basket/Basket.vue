@@ -2,6 +2,7 @@
 <script setup>
     import { inject, onMounted, watch} from 'vue';
     import { state, setUserState, removeUserState } from '@/store';
+import ButtonRed from '../buttonRed/ButtonRed.vue';
 
     const props = defineProps({
         openBasket: Function,
@@ -33,10 +34,9 @@
                     <img src="../../../public/arrow-right.svg" alt="Close basket" class="w-[18px] mr-[20px] cursor-pointer transition hover:translate-x-1">
                     <h2 class="text-2xl font-bold">Кошик</h2>   
                 </div>
-                <button class="px-[10px] bg-red-500 text-white rounded-xl"
-                        v-if="state.productsBasket.length > 1"
-                        @click="deleteAllProducts"
-                >Видалити все</button>
+                <ButtonRed v-if="state.productsBasket.length > 1" @click="deleteAllProducts" class="px-[10px] text-[14px]">
+                        Видалити все
+                </ButtonRed>
             </div>
             <div class="flex flex-col overflow-y-auto h-full">
                 <div v-for="(e) in state.productsBasket" :key="e.id" class="flex w-full p-3 border border-gray-300 mb-[20px] rounded-xl justify-between">
