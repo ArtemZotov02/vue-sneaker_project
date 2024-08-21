@@ -4,6 +4,7 @@
     import { state } from '@/store';
 
     const basket = ref(false)
+    
     const openBasket = () => {
         basket.value = !basket.value
     }

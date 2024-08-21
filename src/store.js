@@ -2,8 +2,8 @@ import { reactive } from 'vue';
 //
 const getUserState = () => {
   const user = localStorage.getItem('user')
-  const {basket = [], favourite = [], profileAvatar = '../public/noUser.webp'} = JSON.parse(localStorage.getItem(`userData_${user}`) || '{}')
-  return {basket, favourite, profileAvatar}
+  const {basket = [], favourite = [], profileAvatar = '/public/noUser.webp', order= []} = JSON.parse(localStorage.getItem(`userData_${user}`) || '{}')
+  return {basket, favourite, profileAvatar, order}
 }
 
 const setUserState = (key, data ) => {
@@ -32,7 +32,7 @@ const state = reactive({
   favourite: getUserState().favourite,
   profileAvatar: getUserState().profileAvatar,
   totalBasket: 0,
-  order: []
+  order: getUserState().order
 });
 //
 function addInFavorite(name, price, img, id) {    
@@ -62,6 +62,8 @@ function addInBasket(e) {
     state.totalBasket += e.price;
     setUserState('basket', state.productsBasket)  
 }
+
+
 
 
 export { state, addInFavorite, addInBasket, getUserState, setUserState, removeUserState};

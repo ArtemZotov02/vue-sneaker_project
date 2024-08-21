@@ -1,12 +1,15 @@
 
 <script setup>
-    import { inject, onMounted, watch} from 'vue';
-    import { state, setUserState, removeUserState } from '@/store';
-import ButtonRed from '../buttonRed/ButtonRed.vue';
+    import { state, setUserState, removeUserState } from '@/store'; 
+    import ButtonRed from '../buttonRed/ButtonRed.vue';
+    import { ref } from 'vue';
 
     const props = defineProps({
         openBasket: Function,
     })
+
+    const isLoggedIn = localStorage.getItem('login') === 'true';
+
 
     const deleteProduct = (id) => {
         const index = state.productsBasket.findIndex(item => item.id === id)
@@ -14,16 +17,26 @@ import ButtonRed from '../buttonRed/ButtonRed.vue';
         state.productsBasket.splice(index, 1)
         state.totalBasket -= deletedProduct.price
         setUserState('basket', state.productsBasket)
-        // localStorage.setItem(`basket_${localStorage.getItem('user')}`, JSON.stringify(state.productsBasket))
     }
     
     const deleteAllProducts = () => {
         state.productsBasket = []
-        // localStorage.removeItem(`basket_${localStorage.getItem('user')}`)
         removeUserState('basket')
         state.totalBasket = 0
     }
 
+
+    const setOrder = ref(false)
+    const makeOrder = () => {
+        state.order = [...state.order, state.productsBasket]
+        setUserState('order', state.order)
+        removeUserState('basket')
+        setOrder.value = true
+        state.productsBasket = []
+        state.totalBasket = 0
+    }
+
+    
 </script>
 
 <template>
@@ -49,22 +62,39 @@ import ButtonRed from '../buttonRed/ButtonRed.vue';
                     </div>
                     <img src="../../../public/close.svg" class="h-[32px] mt-auto cursor-pointer" @click="deleteProduct(e.id)"/>
                 </div>  
-                <div v-if="state.productsBasket.length === 0" class="flex flex-col m-auto items-center w-[70%]">
+                <div v-if="state.productsBasket.length === 0 && setOrder === false" class="flex flex-col m-auto items-center w-[70%]">
                     <img src="../../../public/package-icon.png" alt="No products in basket" class="w-[120px]">
                     <p class="font-bold my-[10px]">Кошик порожній</p>
-                    <button class="w-full p-2 text-white rounded-xl bg-green-500 hover:bg-green-600 active:bg-green-700"
-                    >
+                    <button class="w-full p-2 text-white rounded-xl bg-green-500 hover:bg-green-600 active:bg-green-700">
                         <a href="#/" @click="props.openBasket()">Обрати товар</a>
                     </button>
                 </div>
+                <div v-if="setOrder" class="flex flex-col m-auto items-center w-[70%]">
+                    <img src="../../../public/order-success-icon.png" alt="order-success" class="w-[83px]">
+                    <p class="font-bold my-[10px]">Замовлення оформлене!</p>
+                    <button class="w-full p-2 text-white rounded-xl bg-green-500 hover:bg-green-600 active:bg-green-700">
+                        <a href="#/" @click="props.openBasket()">На головну</a>
+                    </button>
+                </div>
+            
             </div>
-            <div v-if="state.productsBasket.length >= 1" class="pt-[20px] border-t-[1px] border-gray-400">
+            <div v-if="state.productsBasket.length >= 1"  class="pt-[20px] border-t-[1px] border-gray-400">
                 <div class="flex justify-between mb-[30px] gap-2">
                     <p>Всього: </p>
                     <div class="flex-1 border-b-[1px] border-dashed border-gray-400 h-[18px]"></div>
                     <p>{{ state.totalBasket }} грн.</p>
                 </div>
-                <button class="w-full p-3 bg-green-500 rounded-xl text-white  disabled:bg-slate-400 transition hover:bg-green-600 active:bg-green-700">Оформити замовлення</button>
+                <!-- <button @click="makeOrder" class="w-full p-3 bg-green-500 rounded-xl text-white  disabled:bg-slate-400 transition hover:bg-green-600 active:bg-green-700">
+                    Оформити замовлення
+                </button> -->
+                <button v-if="isLoggedIn" @click="makeOrder" class="w-full p-3 bg-green-500 rounded-xl text-white disabled:bg-slate-400 transition hover:bg-green-600 active:bg-green-700">
+                    Оформити замовлення
+                </button>
+                <p v-else class="text-red-600 text-center font-bold ">
+                    Увійдіть до <a href="#/profile" class="underline" @click="props.openBasket">облікового запису</a>, щоб оформити замовлення
+                </p>
             </div>
+            
+            
     </div>
 </template>

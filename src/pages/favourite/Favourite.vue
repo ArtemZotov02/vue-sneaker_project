@@ -20,7 +20,7 @@ import { state, addInFavorite, addInBasket, removeUserState } from '@/store';
         <div class="grid grid-cols-4 gap-5 ">
                 <div v-for="(e) in state.favourite" :key="e.id" class="flex flex-col justify-between relative border mx-auto border-slate-300 rounded-2xl p-[20px] max-w-[288px]">
                     <div>
-                        <img :src="state.favourite.findIndex(item => item.id === e.id ) !== -1 ? '../../../../../public/like-2.svg' : '../../../../../public/like-1.svg' " alt="Add in favourite"
+                        <img :src="state.favourite.findIndex(item => item.id === e.id ) !== -1 ? '/public/like-2.svg' : '/public/like-1.svg' " alt="Add in favourite"
                               class="absolute top-[20px] left-[20px] w-[35px] border-[1px] border-gray-300 rounded-[10px] cursor-pointer" 
                               @click="addInFavorite(e.name, e.price, e.img, e.id)">
                         <img :src="e.img" alt="Shoes">
@@ -32,7 +32,7 @@ import { state, addInFavorite, addInBasket, removeUserState } from '@/store';
                             <span class="text-slate-400">Ціна:</span>
                             <b>{{ e.price}}грн.</b>
                         </div>
-                        <img :src="'../../../public/plus.svg'" alt="Add"
+                        <img :src="'/public/plus.svg'" alt="Add"
                             @click="addInBasket(e)" 
                             class="border-[2px] border-gray-300 rounded-[10px] cursor-pointer"
                         />

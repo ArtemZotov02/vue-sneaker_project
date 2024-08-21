@@ -24,7 +24,7 @@
 </script>
 
 <template>
-    <div class="w-[90vw] pb-[40px] m-auto bg-white rounded-t-xl shadow-xl mt-14">
+    <div class="w-[98vw] pb-[40px] m-auto bg-white rounded-t-xl shadow-xl my-1">
       <Header />  
       <div class="max-w-[85vw] mx-auto">
         <router-view/>

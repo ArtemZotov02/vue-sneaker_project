@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 import { onMounted, reactive, ref } from 'vue';
 import Cookies from 'js-cookie';
 import { getUserState, removeUserState, setUserState, state } from '@/store';
@@ -224,7 +224,66 @@ import ButtonRed from '@/components/buttonRed/ButtonRed.vue';
 
 
 
-  
+   -->
  
 
+<script setup>
+    import { onMounted, ref } from 'vue';
+    import { getUserState, state } from '@/store';
 
+    import Registration from '@/components/registration/Registration.vue';
+    import ProfileOut from '../../components/profileOut/ProfileOut.vue'
+    import Avatar from '@/components/avatar/Avatar.vue';
+    import Orders from '@/components/orders/Orders.vue';
+
+    const authorized = ref(localStorage.getItem('login') === 'true')
+    const auth = ref(true)
+    const login = ref(localStorage.getItem('user') || '')
+
+    const updateUserState = () => {
+        state.favourite = getUserState().favourite;
+        state.productsBasket = getUserState().basket;
+        state.totalBasket = (getUserState().basket || []).reduce((total, item) => total + item.price, 0);
+    }
+    
+    onMounted(() => {
+        if (localStorage.getItem('login')) {
+            auth.value = false;
+        }
+    })
+
+
+
+    
+</script>
+  
+<template>
+    <div>
+      <Registration 
+        v-if="auth" 
+        :auth="auth" 
+        :login="login" 
+        :authorized="authorized"
+        @update:auth="auth = $event" 
+        @update:login="login = $event" 
+        @update:authorized="authorized = $event" 
+        :updateUserState="updateUserState"
+      />
+      
+      <div v-if="authorized">
+        <div class="mt-[30px] flex justify-between bg-gray-100 p-6 rounded-lg shadow-md">
+            <div class="flex flex-col bg-white p-6 shadow-lg rounded-lg w-[49%] h-[262px]">
+                <Avatar :login="login" class="mb-[24px] pb-[24px] border-b-2"/>
+                <ProfileOut 
+                :updateUserState="updateUserState" 
+                :auth="auth" 
+                :authorized="authorized" 
+                @update:auth="auth = $event" 
+                @update:authorized="authorized = $event" 
+                />
+            </div>
+            <Orders/>
+        </div>
+      </div>
+    </div>
+</template>

@@ -96,7 +96,6 @@ import SortProduct from '../sortProduct/SortProduct.vue'
     }
   });
   
-  
   onMounted(()=> {
     products.sort((a, b) => a.name.localeCompare(b.name))
   })
@@ -109,7 +108,7 @@ import SortProduct from '../sortProduct/SortProduct.vue'
         <div class="grid grid-cols-4 gap-5 mt-[20px]">
             <div v-for="(e) in filteredProducts" :key="e.id" class="flex flex-col justify-between relative border mx-auto border-slate-300 rounded-2xl p-[20px] max-w-[288px]">
                 <div>
-                    <img :src="state.favourite.findIndex(item => item.id === e.id ) !== -1  ? '../../../public/like-2.svg' : '../../../public/like-1.svg' " alt="Like 1" 
+                    <img :src="state.favourite.findIndex(item => item.id === e.id ) !== -1  ? '/like-2.svg' : '/like-1.svg' " alt="Like 1" 
                           class="absolute top-[20px] left-[20px] w-[35px] border-[1px] border-gray-300 rounded-[10px] cursor-pointer select-none" 
                           @click="addInFavorite(e.name, e.price, e.img, e.id)"
 
@@ -129,8 +128,11 @@ import SortProduct from '../sortProduct/SortProduct.vue'
                         <p class="h-full mb-[10px]">+</p>
                     </div>
                 </div>
+              </div>
             </div>
-        </div>
+          <div v-if="filteredProducts.length === 0">
+            <p class="text-center font-extrabold text-[24px] my-[40px]" >Товар не знайдено</p>
+          </div>
 </template>
 
 
